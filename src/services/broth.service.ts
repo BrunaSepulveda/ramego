@@ -8,10 +8,10 @@ export class BrothService {
   constructor(@InjectModel('Broth') private brothModel: Model<BrothDocument>) {}
 
   async findOne(id: string): Promise<Broth> {
-    return this.brothModel.findOne({ id }).exec();
+    return this.brothModel.findOne({ id }, { _id: 0, __v: 0 }).exec();
   }
 
   async findAll(): Promise<Broth[]> {
-    return this.brothModel.find().exec();
+    return this.brothModel.find({}, { _id: 0, __v: 0 }).exec();
   }
 }

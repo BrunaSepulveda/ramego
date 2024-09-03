@@ -6,18 +6,6 @@ import { CreateOrderDto } from '../dtos/createOrder.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  getOne(@Param('id') id: string): Promise<Order> {
-    return this.orderService.findOne(id);
-  }
-
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  getAll(): Promise<Order[]> {
-    return this.orderService.findAll();
-  }
-
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createOrderDto: CreateOrderDto){

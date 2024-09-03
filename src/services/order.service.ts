@@ -9,7 +9,6 @@ import { CreateOrderDto } from '../dtos/createOrder.dto';
 import { BrothService } from './broth.service';
 import { ProteinService } from './protein.service';
 
-
 @Injectable()
 export class OrderService {
   constructor(
@@ -20,11 +19,11 @@ export class OrderService {
   ) {}
 
   async findOne(id: string): Promise<Order> {
-    return this.orderModel.findOne({ id }).exec();
+    return this.orderModel.findOne({ id }, { _id: 0, __v: 0 }).exec();
   }
 
   async findAll(): Promise<Order[]> {
-    return this.orderModel.find().exec();
+    return this.orderModel.find({}, { _id: 0, __v: 0 }).exec();
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -38,7 +37,15 @@ export class OrderService {
     const orderId: string = (
       await lastValueFrom(
         this.httpService
-          .post('https://api.tech.redventures.com.br/orders/generate-id')
+          .post(
+            'https://api.tech.redventures.com.br/orders/generate-id',
+            {},
+            {
+              headers: {
+                'x-api-key': 'ZtVdh8XQ2U8pWI2gmZ7f796Vh8GllXoN7mr0djNf',
+              },
+            },
+          )
           .pipe(map((response) => response.data)),
       )
     )?.orderId;

@@ -1,11 +1,9 @@
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsNotEmpty({ message: 'both brothId and proteinId are required' })
-  @IsNumberString()
+  @IsNotEmpty({ message: 'brothId and proteinId are required' })
   public brothId: string;
 
-  @IsNotEmpty({ message: 'both brothId and proteinId are required' })
-  @IsNumberString()
+  @IsNotEmpty({ message: 'brothId and proteinId are required' })
   public proteinId: string;
 }

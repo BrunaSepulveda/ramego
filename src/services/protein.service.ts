@@ -9,10 +9,10 @@ export class ProteinService {
   constructor(@InjectModel('Protein') private proteinModel: Model<ProteinDocument>) {}
 
   async findOne(id: string): Promise<Protein> {
-    return this.proteinModel.findOne({ id }).exec();
+    return this.proteinModel.findOne({ id }, { _id: 0, __v: 0 }).exec();
   }
 
   async findAll(): Promise<Protein[]> {
-    return this.proteinModel.find().exec();
+    return this.proteinModel.find({}, { _id: 0, __v: 0 }).exec();
   }
 }
