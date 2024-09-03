@@ -6,7 +6,11 @@ import { Protein, ProteinDocument } from '../schemas/protein.schema';
 
 @Injectable()
 export class ProteinService {
-  constructor(@InjectModel(Protein.name) private proteinModel: Model<ProteinDocument>) {}
+  constructor(@InjectModel('Protein') private proteinModel: Model<ProteinDocument>) {}
+
+  async findOne(id: string): Promise<Protein> {
+    return this.proteinModel.findOne({ id }).exec();
+  }
 
   async findAll(): Promise<Protein[]> {
     return this.proteinModel.find().exec();

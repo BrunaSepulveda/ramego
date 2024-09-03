@@ -9,9 +9,6 @@ export class Order {
   id: string;
 
   @Prop()
-  orderId: string
-
-  @Prop()
   image: string;
 
   @Prop()

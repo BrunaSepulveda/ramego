@@ -3,6 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BrothService } from './services/broth.service';
 import { ProteinService } from './services/protein.service';
 import { OrderService } from './services/order.service';
+import { OrderController } from './controllers/order.controller';
+import { BrothController } from './controllers/broth.controller';
+import { ProteinController } from './controllers/protein.controller';
+import { BrothSchema } from './schemas/broth.schema';
+import { OrderSchema } from './schemas/order.schema';
+import { ProteinSchema } from './schemas/protein.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -12,8 +19,12 @@ import { OrderService } from './services/order.service';
         authSource: 'admin',
       },
     ),
+    MongooseModule.forFeature([{ name: 'Broth', schema: BrothSchema }]),
+    MongooseModule.forFeature([{ name: 'Protein', schema: ProteinSchema }]),
+    MongooseModule.forFeature([{ name: 'Order', schema: OrderSchema }]),
+    HttpModule.register({})
   ],
-  controllers: [],
+  controllers: [BrothController, ProteinController, OrderController],
   providers: [BrothService, ProteinService, OrderService],
 })
 export class AppModule {}

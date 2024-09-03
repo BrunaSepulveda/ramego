@@ -1,22 +1,61 @@
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Order, OrderDocument } from '../schemas/order.schema';
+import { CreateOrderDto } from '../dtos/createOrder.dto';
+import { BrothService } from './broth.service';
+import { ProteinService } from './protein.service';
+
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel('Order') private orderModel: Model<OrderDocument>,
     private readonly httpService: HttpService,
+    private readonly brothService: BrothService,
+    private readonly proteinService: ProteinService,
   ) {}
 
-  async create(order: Partial<Order>): Promise<OrderDocument> {
-    const orderId = this.httpService
-      .post('https://api.tech.redventures.com.br/orders/generate-id')
-      .pipe(map((response) => response.data.orderId));
+  async findOne(id: string): Promise<Order> {
+    return this.orderModel.findOne({ id }).exec();
+  }
 
-    return this.orderModel.create({ ...order, orderId });
+  async findAll(): Promise<Order[]> {
+    return this.orderModel.find().exec();
+  }
+
+  async create(createOrderDto: CreateOrderDto): Promise<Order> {
+    const broth = await this.brothService.findOne(createOrderDto.brothId);
+    const protein = await this.proteinService.findOne(createOrderDto.proteinId);
+
+    if (!broth || !protein) {
+      throw new InternalServerErrorException('could not place order');
+    }
+
+    const orderId: string = (
+      await lastValueFrom(
+        this.httpService
+          .post('https://api.tech.redventures.com.br/orders/generate-id')
+          .pipe(map((response) => response.data)),
+      )
+    )?.orderId;
+
+    if (!orderId) {
+      throw new InternalServerErrorException('could not place order');
+    }
+
+    const brothName = broth.name;
+    const proteinName = protein.name;
+
+    const order: Order = {
+      id: orderId,
+      description: `${brothName} and ${proteinName} Ramen`,
+      image: `https://tech.redventures.com.br/icons/ramen/ramen${proteinName}.png`,
+    };
+
+    return this.orderModel.create(order);
   }
 }
